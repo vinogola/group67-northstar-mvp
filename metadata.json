@@ -1,0 +1,6 @@
+{
+  "name": "Order Status Lookup",
+  "description": "Northstar Retail Co. Customer Support Deflection MVP - Order Status Lookup Tool",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

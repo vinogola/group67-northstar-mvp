@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Status Lookup - Northstar Retail Co.</title>
+  <style>
+    /* ==========================================================================
+       PERMANENT UI STYLES (Modern, responsive, clean sans-serif design)
+       ========================================================================== */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --emerald-50: #ecfdf5;
+      --emerald-700: #047857;
+      --amber-50: #fffbeb;
+      --amber-800: #92400e;
+      --rose-50: #fff1f2;
+      --rose-600: #e11d48;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius-lg: 14px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* Main Container Card */
+    .card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--slate-200);
+      overflow: hidden;
+      padding: 32px 28px;
+      transition: all 0.2s ease;
+    }
+
+    /* Header */
+    .brand-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--slate-500);
+      margin-bottom: 24px;
+    }
+
+    /* Search Form */
+    .search-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .text-input {
+      width: 100%;
+      height: 46px;
+      padding: 0 16px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 1px solid var(--slate-300);
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      color: var(--slate-900);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-check {
+      height: 46px;
+      padding: 0 22px;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.15s ease, transform 0.05s ease;
+      white-space: nowrap;
+    }
+
+    .btn-check:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-check:active {
+      transform: scale(0.98);
+    }
+
+    /* Examples & Hints Section */
+    .hints-section {
+      margin-bottom: 24px;
+      font-size: 12px;
+      color: var(--slate-500);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hint-chip {
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      color: var(--slate-700);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .hint-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .hint-chip.missing {
+      color: var(--rose-600);
+      border-color: #fecdd3;
+      background: var(--rose-50);
+    }
+
+    /* Result Box Container */
+    #result-container {
+      margin-top: 20px;
+    }
+
+    /* Order Result Card */
+    .order-card {
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      background: var(--slate-50);
+      overflow: hidden;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .order-header {
+      background: #ffffff;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .order-id-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .order-id-val {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--slate-900);
+    }
+
+    /* Status Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-processing { background: var(--primary-light); color: var(--primary); border: 1px solid #bfdbfe; }
+    .badge-shipped { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+    .badge-delivered { background: var(--emerald-50); color: var(--emerald-700); border: 1px solid #a7f3d0; }
+    .badge-delayed { background: var(--amber-50); color: var(--amber-800); border: 1px solid #fde68a; }
+    .badge-out-for-delivery { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+    .order-body {
+      padding: 18px 20px;
+    }
+
+    /* One-line Status Detail Highlight Box */
+    .status-detail-box {
+      background: #ffffff;
+      border-left: 3px solid var(--primary);
+      border-radius: 4px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-headline {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 3px;
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: var(--slate-700);
+    }
+
+    .order-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .meta-item {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      padding: 10px 12px;
+      border-radius: 6px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .meta-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-900);
+      margin-top: 2px;
+    }
+
+    /* Friendly 404 Not Found Card */
+    .not-found-card {
+      border: 1px solid #fecdd3;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      text-align: center;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .not-found-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+    }
+
+    .not-found-desc {
+      font-size: 13px;
+      color: var(--slate-500);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .not-found-tips {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--slate-700);
+      text-align: left;
+    }
+
+    .not-found-tips ul {
+      margin-left: 18px;
+      margin-top: 4px;
+    }
+
+    /* Validation Prompt */
+    .validation-msg {
+      font-size: 12px;
+      color: var(--rose-600);
+      margin-top: 6px;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--slate-500);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <span class="brand-tag">Northstar Retail Co. • Self-Serve Support</span>
+      <h1 class="title">Order Status Lookup</h1>
+      <p class="subtitle">Enter your order ID below to view instant shipment updates and tracking.</p>
+
+      <!-- Input Form -->
+      <form id="order-lookup-form" class="search-form" onsubmit="handleFormSubmit(event)">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="order-id-input" 
+            class="text-input" 
+            placeholder="e.g. NS-10234" 
+            autocomplete="off" 
+            spellcheck="false"
+          />
+        </div>
+        <button type="submit" id="btn-check-status" class="btn-check">
+          Check
+        </button>
+      </form>
+      <div id="validation-error" class="validation-msg">Please enter an order ID (e.g. NS-10234).</div>
+
+      <!-- Quick Hint Chips -->
+      <div class="hints-section">
+        <span>Try an example:</span>
+        <button type="button" class="hint-chip" onclick="fillAndSearch('NS-10234')">NS-10234 (Processing)</button>
+        <button type="button" class="hint-chip" onclick="fillAndSearch('NS-10892')">NS-10892 (Shipped)</button>
+        <button type="button" class="hint-chip" onclick="fillAndSearch('NS-11402')">NS-11402 (Delivered)</button>
+        <button type="button" class="hint-chip" onclick="fillAndSearch('NS-12095')">NS-12095 (Delayed)</button>
+        <button type="button" class="hint-chip missing" onclick="fillAndSearch('NS-99999')">NS-99999 (Missing)</button>
+      </div>
+
+      <!-- Results Display Container -->
+      <div id="result-container"></div>
+    </div>
+
+    <div class="footer-note">
+      Group 67 • Support Deflection MVP • Front-End View (Owen)
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       SECTION 1: TEMPORARY MOCK DATASET & LOOKUP FUNCTION
+       (Vincent in Task 3 will replace this function with real logic / API)
+       ========================================================================== */
+
+    const MOCK_ORDERS = {
+      "NS-10234": {
+        orderId: "NS-10234",
+        status: "Processing",
+        headline: "Order is being prepared",
+        detail: "Items are packed at our Central Logistics Hub. Dispatch within 24 hours.",
+        estimatedDelivery: "Mon, Oct 27 by 7:00 PM",
+        carrier: "Standard Ground (Pending pickup)",
+        tracking: "TRK-9831042",
+        destination: "Seattle, WA"
+      },
+      "NS-10892": {
+        orderId: "NS-10892",
+        status: "Shipped",
+        headline: "In transit with FedEx Express",
+        detail: "Departed regional hub in Denver, CO. Arriving on schedule Friday, Oct 24.",
+        estimatedDelivery: "Fri, Oct 24 by 4:30 PM",
+        carrier: "FedEx Express",
+        tracking: "FDX-774910284",
+        destination: "Austin, TX"
+      },
+      "NS-11402": {
+        orderId: "NS-11402",
+        status: "Delivered",
+        headline: "Delivered to front porch",
+        detail: "Package signed for and safely delivered on Tuesday, Oct 21 at 2:14 PM.",
+        estimatedDelivery: "Delivered Oct 21",
+        carrier: "UPS Ground",
+        tracking: "1Z9999999999999999",
+        destination: "Chicago, IL"
+      },
+      "NS-12095": {
+        orderId: "NS-12095",
+        status: "Delayed",
+        headline: "Carrier Weather Delay",
+        detail: "Severe Midwest storms held up transport in Chicago. Revised arrival Oct 28.",
+        estimatedDelivery: "Revised: Tue, Oct 28 by 6:00 PM",
+        carrier: "DHL Express",
+        tracking: "DHL-481903112",
+        destination: "Boston, MA"
+      },
+      "NS-12500": {
+        orderId: "NS-12500",
+        status: "Out for Delivery",
+        headline: "Out for delivery with driver",
+        detail: "Courier is on route in your neighborhood. Expected arrival today by 4:00 PM.",
+        estimatedDelivery: "Today by 4:00 PM",
+        carrier: "Northstar Express",
+        tracking: "NSE-550182",
+        destination: "Atlanta, GA"
+      }
+    };
+
+    /**
+     * LOOKUP FUNCTION:
+     * Takes an order ID, normalizes it, and returns the order object or null.
+     * Ready to be swapped out for a backend API / fetch call.
+     */
+    function lookupOrderStatus(orderId) {
+      if (!orderId) return null;
+      // Handle edge cases: trimming and case-insensitivity
+      const cleanId = orderId.trim().toUpperCase();
+      if (!cleanId) return null;
+      return MOCK_ORDERS[cleanId] || null;
+    }
+
+    /* ==========================================================================
+       SECTION 2: PERMANENT FRONT-END UI CONTROLLER & RENDERING LOGIC
+       ========================================================================== */
+
+    const inputElem = document.getElementById("order-id-input");
+    const resultContainer = document.getElementById("result-container");
+    const validationError = document.getElementById("validation-error");
+
+    function getBadgeClass(status) {
+      switch (status) {
+        case "Processing": return "badge-processing";
+        case "Shipped": return "badge-shipped";
+        case "Delivered": return "badge-delivered";
+        case "Delayed": return "badge-delayed";
+        case "Out for Delivery": return "badge-out-for-delivery";
+        default: return "badge-processing";
+      }
+    }
+
+    function renderOrderResult(order) {
+      const badgeClass = getBadgeClass(order.status);
+      resultContainer.innerHTML = `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id-label">Order Reference</div>
+              <div class="order-id-val">${escapeHtml(order.orderId)}</div>
+            </div>
+            <span class="badge ${badgeClass}">${escapeHtml(order.status)}</span>
+          </div>
+          <div class="order-body">
+            <div class="status-detail-box">
+              <div class="status-headline">${escapeHtml(order.headline)}</div>
+              <div class="status-text">${escapeHtml(order.detail)}</div>
+            </div>
+            <div class="order-meta-grid">
+              <div class="meta-item">
+                <div class="meta-label">Estimated Arrival</div>
+                <div class="meta-value">${escapeHtml(order.estimatedDelivery)}</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Carrier & Tracking</div>
+                <div class="meta-value">${escapeHtml(order.carrier)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNotFound(searchedId) {
+      resultContainer.innerHTML = `
+        <div class="not-found-card">
+          <div class="not-found-title">No order found for "${escapeHtml(searchedId)}"</div>
+          <div class="not-found-desc">We couldn't locate any shipment records matching this ID.</div>
+          <div class="not-found-tips">
+            <strong>Tips:</strong>
+            <ul>
+              <li>Check your confirmation email for typos (e.g. <code>NS-10234</code>).</li>
+              <li>Ensure the <code>NS-</code> prefix is included.</li>
+              <li>Brand-new orders may take up to 15 minutes to appear in our system.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleFormSubmit(event) {
+      if (event) event.preventDefault();
+      const rawValue = inputElem.value;
+      const trimmed = rawValue.trim();
+
+      if (!trimmed) {
+        validationError.style.display = "block";
+        inputElem.focus();
+        return;
+      }
+
+      validationError.style.display = "none";
+      
+      // Perform sub-500ms lookup
+      const result = lookupOrderStatus(trimmed);
+      if (result) {
+        renderOrderResult(result);
+      } else {
+        renderNotFound(trimmed.toUpperCase());
+      }
+    }
+
+    function fillAndSearch(id) {
+      inputElem.value = id;
+      validationError.style.display = "none";
+      handleFormSubmit();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    inputElem.addEventListener('input', () => {
+      if (inputElem.value.trim()) {
+        validationError.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
