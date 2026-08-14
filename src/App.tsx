@@ -18,7 +18,7 @@ import {
   Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import StockAvailability from './stockAvailability';
+import StockAvailability from './StockAvailability';
 
 export default function App() {
   const [orderInput, setOrderInput] = useState('');
