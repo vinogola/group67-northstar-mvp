@@ -28,3 +28,17 @@ export function getStockStatus(
 
   return "IN_STOCK";
 }
+export function reduceStock(
+  item: StockItem,
+  quantity: number
+): Stock {
+  if (quantity <= 0) {
+    throw new Error('Quantity must be
+  greater than zero. ');
+  }
+
+  return {
+    ...item,
+    quantity: item.quantity - quantity,
+  };
+}
