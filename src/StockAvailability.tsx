@@ -6,11 +6,13 @@ type product = {
   ] ;
 
 const products:[] = [
-  { name: "classic T-Shirt" , stock: 24 } ,
+  { name: "classic T-Shirt" , stock: 
+24 } ,
 
   { name: "Runnning Shoes" , stock: 8 } ,
    { name: "Denim Jacket" , stock: 0 } ,
-    { name:"School Backpack" , stock: 15 } ,
+    { name:"School Backpack" , stock: 
+15 } ,
      ] ;
 
      export default function StockAvailability() {
