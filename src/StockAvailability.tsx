@@ -43,13 +43,13 @@ const products:[] = [
 
      <div className="flex gap-2">
      <input
-     type="text"
-     value={item}
-     onchange={(e) => {
-       setItem(e.target.value);
+     type = "text"
+     value = {item}
+     onchange = {(e) => {
+       setItem (e.target.value);
        setChecked(false);
      }}
-     placeholder="Enter item name"
+     placeholder = "Enter item name"
      className="flex-1border rounded-1g
      px-3 py-2"
      />
