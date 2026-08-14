@@ -254,7 +254,7 @@ export default function App() {
             Standalone single-file vanilla HTML is available in <code className="font-mono text-slate-300 bg-slate-900 px-1 py-0.5 rounded border border-slate-800">/public/order-status.html</code>.
           </p>
         </div>
-
+      <StockAvailability />
       </main>
 
       {/* Footer */}
