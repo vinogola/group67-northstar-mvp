@@ -1,43 +1,37 @@
 import React, { useState } from "react";
-
-type Product = {
-  name: string;
-  stock: number;
-};
-
-const products: Product[] = [
-  { name: "Classic T-Shirt", stock: 24 },
-  { name: "Running Shoes", stock: 8 },
-  { name: "Denim Jacket", stock: 0 },
-  { name: "School Backpack", stock: 15 },
-];
+import { STOCK_ITEMS, getStockStatus, StockItem } from "./stockService";
 
 const EXAMPLE_ITEMS = [
-  { name: "Classic T-Shirt", label: "in stock" },
-  { name: "Denim Jacket", label: "out of stock" },
-  { name: "Winter Coat", label: "not found" },
+  { name: "Merino Wool Crewneck Sweater (Navy - M)", label: "in stock" },
+  { name: "Waterproof Trail Hiking Boots (Size 10.5)", label: "low stock" },
+  { name: "Ceramic Pour-Over Coffee Maker", label: "out of stock" },
+  { name: "Winter Parka", label: "not found" },
 ];
 
 export default function StockAvailability() {
   const [item, setItem] = useState("");
-  const [result, setResult] = useState<Product | null>(null);
+  const [result, setResult] = useState<StockItem | null>(null);
   const [checked, setChecked] = useState(false);
 
+  const findItem = (name: string) =>
+    STOCK_ITEMS.find((p) => p.name.toLowerCase() === name.trim().toLowerCase());
+
   const checkAvailability = () => {
-    const found = products.find(
-      (p) => p.name.toLowerCase() === item.trim().toLowerCase()
-    );
-    setResult(found || null);
+    setResult(findItem(item) || null);
     setChecked(true);
   };
 
   const handleExampleClick = (name: string) => {
     setItem(name);
-    const found = products.find(
-      (p) => p.name.toLowerCase() === name.toLowerCase()
-    );
-    setResult(found || null);
+    setResult(findItem(name) || null);
     setChecked(true);
+  };
+
+  const statusText = (quantity: number) => {
+    const status = getStockStatus(quantity);
+    if (status === "OUT_OF_STOCK") return { text: "Out of stock", className: "text-red-700" };
+    if (status === "LOW_STOCK") return { text: `Low stock (${quantity} left)`, className: "text-amber-600" };
+    return { text: `Available (${quantity} in stock)`, className: "text-green-700" };
   };
 
   return (
@@ -83,11 +77,9 @@ export default function StockAvailability() {
       {checked && result && (
         <div className="mt-4 border rounded-lg p-4">
           <h3 className="font-semibold">{result.name}</h3>
-          {result.stock > 0 ? (
-            <p className="text-green-700">Available ({result.stock} in stock)</p>
-          ) : (
-            <p className="text-red-700">Out of stock</p>
-          )}
+          <p className={statusText(result.quantity).className}>
+            {statusText(result.quantity).text}
+          </p>
         </div>
       )}
 
