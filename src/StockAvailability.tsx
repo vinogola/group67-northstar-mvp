@@ -12,6 +12,12 @@ const products: Product[] = [
   { name: "School Backpack", stock: 15 },
 ];
 
+const EXAMPLE_ITEMS = [
+  { name: "Classic T-Shirt", label: "in stock" },
+  { name: "Denim Jacket", label: "out of stock" },
+  { name: "Winter Coat", label: "not found" },
+];
+
 export default function StockAvailability() {
   const [item, setItem] = useState("");
   const [result, setResult] = useState<Product | null>(null);
@@ -21,7 +27,15 @@ export default function StockAvailability() {
     const found = products.find(
       (p) => p.name.toLowerCase() === item.trim().toLowerCase()
     );
+    setResult(found || null);
+    setChecked(true);
+  };
 
+  const handleExampleClick = (name: string) => {
+    setItem(name);
+    const found = products.find(
+      (p) => p.name.toLowerCase() === name.toLowerCase()
+    );
     setResult(found || null);
     setChecked(true);
   };
@@ -52,6 +66,20 @@ export default function StockAvailability() {
         </button>
       </div>
 
+      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+        <span className="text-gray-500">Try:</span>
+        {EXAMPLE_ITEMS.map((ex) => (
+          <button
+            key={ex.name}
+            type="button"
+            onClick={() => handleExampleClick(ex.name)}
+            className="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+          >
+            {ex.name} <span className="text-gray-400">({ex.label})</span>
+          </button>
+        ))}
+      </div>
+
       {checked && result && (
         <div className="mt-4 border rounded-lg p-4">
           <h3 className="font-semibold">{result.name}</h3>
@@ -75,4 +103,3 @@ export default function StockAvailability() {
     </div>
   );
 }
-
