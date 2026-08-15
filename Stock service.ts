@@ -33,8 +33,7 @@ export function reduceStock(
   quantity: number
 ): StockItem {
   if (quantity <= 0) {
-    throw new Error('Quantity must be
-  greater than zero. ');
+    throw new Error('Quantity must be greater than zero. ');
   }
 
   return {
